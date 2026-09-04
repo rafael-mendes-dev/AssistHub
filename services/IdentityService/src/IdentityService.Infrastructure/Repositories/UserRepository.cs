@@ -1,47 +1,47 @@
+using AssistHub.BuildingBlocks.Persistence;
 using IdentityService.Domain.Entities;
 using IdentityService.Domain.Repositories;
-using IdentityService.Infrastructure.Data;
-using Microsoft.EntityFrameworkCore;
+using MongoDB.Driver;
 
 namespace IdentityService.Infrastructure.Repositories;
 
-public sealed class UserRepository(AppDbContext dbContext) : IUserRepository
+public sealed class UserRepository : MongoRepository<User>, IUserRepository
 {
-    public Task<User?> GetByIdAsync(
-        Guid id,
-        CancellationToken cancellationToken = default)
+    public UserRepository(IMongoDatabase database) : base(database, "users")
     {
-        return dbContext.Users
-            .SingleOrDefaultAsync(user => user.Id == id, cancellationToken);
-    } 
+        Collection.Indexes.CreateMany([
+            new CreateIndexModel<User>(
+                Builders<User>.IndexKeys.Ascending(user => user.NormalizedEmail),
+                new CreateIndexOptions { Unique = true }),
+            new CreateIndexModel<User>(
+                Builders<User>.IndexKeys.Ascending(user => user.DeletedAt))
+        ]);
+    }
 
-    public Task<User?> GetByEmailAsync(
+    public async Task<User?> GetByEmailAsync(
         string email,
         CancellationToken cancellationToken = default)
     {
         var normalizedEmail = User.NormalizeEmail(email);
 
-        return dbContext.Users
-            .SingleOrDefaultAsync(
-                user => user.NormalizedEmail == normalizedEmail,
-                cancellationToken);
+        return await Collection.Find(user =>
+                user.NormalizedEmail == normalizedEmail && !user.IsDeleted)
+            .FirstOrDefaultAsync(cancellationToken);
     }
 
-    public Task<User?> GetDeletedByEmailAsync(
+    public async Task<User?> GetDeletedByEmailAsync(
         string email,
         DateTime deletedAfter,
         CancellationToken cancellationToken = default)
     {
         var normalizedEmail = User.NormalizeEmail(email);
 
-        return dbContext.Users
-            .IgnoreQueryFilters()
-            .SingleOrDefaultAsync(
-                user => user.NormalizedEmail == normalizedEmail &&
-                        user.IsDeleted &&
-                        user.DeletedAt != null &&
-                        user.DeletedAt > deletedAfter,
-                cancellationToken);
+        return await Collection.Find(user =>
+                user.NormalizedEmail == normalizedEmail &&
+                user.IsDeleted &&
+                user.DeletedAt != null &&
+                user.DeletedAt > deletedAfter)
+            .FirstOrDefaultAsync(cancellationToken);
     }
 
     public Task<bool> ExistsByEmailAsync(
@@ -50,23 +50,19 @@ public sealed class UserRepository(AppDbContext dbContext) : IUserRepository
     {
         var normalizedEmail = User.NormalizeEmail(email);
 
-        return dbContext.Users
-            .IgnoreQueryFilters()
-            .AnyAsync(
-                user => user.NormalizedEmail == normalizedEmail,
-                cancellationToken);
+        return Collection.Find(user => user.NormalizedEmail == normalizedEmail)
+            .AnyAsync(cancellationToken);
     }
 
-    public void Add(User user)
-    {
-        dbContext.Users.Add(user);
-    }
-
-    public void SoftDelete(User user, DateTime deletedAt)
+    public Task SoftDeleteAsync(
+        User user,
+        DateTime deletedAt,
+        CancellationToken cancellationToken = default)
     {
         user.IsDeleted = true;
         user.DeletedAt = deletedAt;
         user.UpdatedAt = deletedAt;
+        return UpdateAsync(user, cancellationToken);
     }
 
     public async Task<int> PermanentlyDeleteBeforeAsync(
@@ -76,15 +72,13 @@ public sealed class UserRepository(AppDbContext dbContext) : IUserRepository
     {
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(batchSize);
 
-        var expiredUserIds = await dbContext.Users
-            .IgnoreQueryFilters()
-            .Where(user =>
+        var expiredUserIds = await Collection.Find(user =>
                 user.IsDeleted &&
                 user.DeletedAt != null &&
                 user.DeletedAt <= deletedBefore)
-            .OrderBy(user => user.DeletedAt)
-            .Select(user => user.Id)
-            .Take(batchSize)
+            .SortBy(user => user.DeletedAt)
+            .Limit(batchSize)
+            .Project(user => user.Id)
             .ToListAsync(cancellationToken);
 
         if (expiredUserIds.Count == 0)
@@ -92,9 +86,10 @@ public sealed class UserRepository(AppDbContext dbContext) : IUserRepository
             return 0;
         }
 
-        return await dbContext.Users
-            .IgnoreQueryFilters()
-            .Where(user => expiredUserIds.Contains(user.Id))
-            .ExecuteDeleteAsync(cancellationToken);
+        var result = await Collection.DeleteManyAsync(
+            user => expiredUserIds.Contains(user.Id),
+            cancellationToken);
+
+        return checked((int)result.DeletedCount);
     }
 }

@@ -1,9 +1,8 @@
 using IdentityService.Domain.Repositories;
-using IdentityService.Infrastructure.Data;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using IdentityService.Infrastructure.Repositories;
+using MongoDB.Driver;
 
 namespace IdentityService.Infrastructure;
 
@@ -11,18 +10,15 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
-        var connectionString =
-            configuration.GetConnectionString("DefaultConnection")
-            ?? throw new InvalidOperationException(
-                "Connection string 'DefaultConnection' not found.");
-        
-        services.AddDbContext<AppDbContext>(options =>
-            options.UseNpgsql(connectionString));
+        var connectionString = configuration["MongoDb:ConnectionString"]
+            ?? throw new InvalidOperationException("MongoDb:ConnectionString not found.");
+        var databaseName = configuration["MongoDb:DatabaseName"]
+            ?? throw new InvalidOperationException("MongoDb:DatabaseName not found.");
 
-        services.AddScoped<IUnitOfWork>(provider =>
-            provider.GetRequiredService<AppDbContext>());
-
-        services.AddScoped<IUserRepository, UserRepository>();
+        services.AddSingleton<IMongoClient>(new MongoClient(connectionString));
+        services.AddSingleton(provider =>
+            provider.GetRequiredService<IMongoClient>().GetDatabase(databaseName));
+        services.AddSingleton<IUserRepository, UserRepository>();
 
         return services;
     }

@@ -19,9 +19,12 @@ public interface IUserRepository
         string email,
         CancellationToken cancellationToken = default);
 
-    void Add(User user);
+    Task AddAsync(User user, CancellationToken cancellationToken = default);
 
-    void SoftDelete(User user, DateTime deletedAt);
+    Task SoftDeleteAsync(
+        User user,
+        DateTime deletedAt,
+        CancellationToken cancellationToken = default);
 
     Task<int> PermanentlyDeleteBeforeAsync(
         DateTime deletedBefore,
