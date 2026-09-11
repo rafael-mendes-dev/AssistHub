@@ -10,24 +10,11 @@ public interface IUserRepository
         string email,
         CancellationToken cancellationToken = default);
 
-    Task<User?> GetDeletedByEmailAsync(
-        string email,
-        DateTime deletedAfter,
-        CancellationToken cancellationToken = default);
-
     Task<bool> ExistsByEmailAsync(
         string email,
         CancellationToken cancellationToken = default);
 
     Task AddAsync(User user, CancellationToken cancellationToken = default);
-
-    Task SoftDeleteAsync(
-        User user,
-        DateTime deletedAt,
-        CancellationToken cancellationToken = default);
-
-    Task<int> PermanentlyDeleteBeforeAsync(
-        DateTime deletedBefore,
-        int batchSize = 500,
-        CancellationToken cancellationToken = default);
+    Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default);
+    Task<bool> UpdateAsync(User user, CancellationToken cancellationToken = default);
 }
