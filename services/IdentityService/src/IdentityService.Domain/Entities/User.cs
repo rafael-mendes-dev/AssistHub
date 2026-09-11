@@ -1,27 +1,20 @@
 using AssistHub.BuildingBlocks.Entities;
+using IdentityService.Domain.Enums;
 
 namespace IdentityService.Domain.Entities;
 
-public class User : AuditableSoftDeletableEntity
+public class User : BaseEntity, IAuditable
 {
-    private string _email = null!;
-
-    public required string FirstName { get; set; }
+    public required string Email { get; set { field = value.Trim(); EmailNormalized = NormalizeEmail(value); } } = null!;
+    public string EmailNormalized { get; private set; } = null!;
+    public required string DisplayName { get; set; }
+    public required UserStatusEnum Status { get; set; }
     public required string PasswordHash { get; set; }
-    public required string LastName { get; set; }
-
-    public required string Email
-    {
-        get => _email;
-        set
-        {
-            _email = value.Trim();
-            NormalizedEmail = NormalizeEmail(value);
-        }
-    }
-
-    public string NormalizedEmail { get; private set; } = null!;
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime? UpdatedAt { get; set; }
     public string? PhoneNumber { get; set; }
+    public List<ExternalAuthIdentity> ExternalAuth { get; set; } = [];
+
 
     public static string NormalizeEmail(string email)
     {
