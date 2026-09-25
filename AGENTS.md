@@ -2,13 +2,13 @@
 
 ## Contexto
 
-AssistHub é um projeto de microsserviços em .NET 10. A solução principal é `AssistHub.sln`. Os serviços estão em `services/`: `IdentityService`, `ConversationService`, `IntegrationService`, `KnowledgeBaseService`, `AgentOrchestratorService` e `NotificationService`. Código reutilizável fica em `building-blocks/AssistHub.BuildingBlocks`.
+AssistHub é um projeto de microsserviços em .NET 10. A solução principal é `AssistHub.sln`. Os serviços estão em `services/`: `IdentityService`, `ConversationService`, `IntegrationService`, `KnowledgeBaseService`, `AgentOrchestratorService` e `NotificationService`. Código reutilizável fica em `building-blocks/`: `AssistHub.BuildingBlocks` contém tipos de domínio e `AssistHub.BuildingBlocks.Persistence` contém a base genérica de persistência Mongo.
 
 ## Arquitetura: Clean Architecture + Vertical Slice
 
 - Use a separação de responsabilidades e a direção de dependências da Clean Architecture **dentro de cada serviço**: `Domain` não depende de API, Application ou Infrastructure; `Application` depende de `Domain`; `Infrastructure` implementa contratos internos; `Api` é a borda HTTP e o ponto de composição.
 - Organize a implementação **por caso de uso**: `Application/Features/<Area>/<CasoDeUso>/` para regras, contratos e validação do caso; `Api/Features/<Area>/<CasoDeUso>/` para o endpoint e seus contratos HTTP. Modelos compartilhados da área podem ficar em `Domain/Features/<Area>/`; implementações específicas de banco ficam em `Infrastructure/Persistence/<Area>/`. Não espalhe a regra de um caso de uso por pastas horizontais genéricas de `Handlers`, `Services` ou `Repositories`.
-- Configuração e clientes Mongo, índices, serializers e repositórios concretos pertencem a `Infrastructure`, nunca a `Api` ou `Domain`. Registre `Infrastructure` em `Program.cs` sem colocar regras de negócio ali. `building-blocks/` deve permanecer independente do Mongo e de outros detalhes de infraestrutura.
+- Configuração e clientes Mongo, índices, serializers e repositórios concretos pertencem a `Infrastructure`, nunca a `Api` ou `Domain`. Registre `Infrastructure` em `Program.cs` sem colocar regras de negócio ali. A base genérica `MongoRepository<T>` fica em `AssistHub.BuildingBlocks.Persistence` para ser reutilizada pelas infraestruturas dos serviços; apenas projetos `Infrastructure` devem referenciá-la na aplicação. `AssistHub.BuildingBlocks` (tipos de domínio) permanece independente de MongoDB.Driver.
 - Hoje só `IdentityService` precisa de `Domain`, `Application` e `Infrastructure`: há modelos em `Domain/Features/Users` e `Domain/Features/Tenants` e persistência em `Infrastructure/Persistence`. Ainda não há casos de uso ou endpoints implementados; `Application/Features` e `Api/Features` estão preparados para eles. Os outros cinco serviços continuam apenas com `Api/Features` vazio; crie projetos adicionais quando houver código que justifique a separação.
 - Não introduza MediatR, interfaces ou outros projetos apenas para completar um diagrama; preserve a direção das dependências quando surgirem funcionalidades reais.
 

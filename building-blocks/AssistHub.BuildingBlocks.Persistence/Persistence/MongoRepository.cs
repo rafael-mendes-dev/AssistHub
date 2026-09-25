@@ -1,7 +1,7 @@
 using AssistHub.BuildingBlocks.Entities;
 using MongoDB.Driver;
 
-namespace IdentityService.Infrastructure.Persistence;
+namespace AssistHub.BuildingBlocks.Persistence;
 
 public abstract class MongoRepository<TDocument>(
     IMongoDatabase database,

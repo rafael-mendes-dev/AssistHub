@@ -1,4 +1,4 @@
-using IdentityService.Infrastructure.Persistence;
+using AssistHub.BuildingBlocks.Persistence;
 using IdentityService.Domain.Features.Users;
 using MongoDB.Driver;
 

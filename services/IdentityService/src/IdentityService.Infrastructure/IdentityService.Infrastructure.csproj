@@ -3,6 +3,7 @@
   <ItemGroup>
     <ProjectReference Include="..\IdentityService.Application\IdentityService.Application.csproj" />
     <ProjectReference Include="..\IdentityService.Domain\IdentityService.Domain.csproj" />
+    <ProjectReference Include="..\..\..\..\building-blocks\AssistHub.BuildingBlocks.Persistence\AssistHub.BuildingBlocks.Persistence.csproj" />
   </ItemGroup>
 
   <ItemGroup>
