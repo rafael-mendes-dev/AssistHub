@@ -11,9 +11,5 @@
     <PackageReference Include="Microsoft.OpenApi" Version="2.7.5" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\KnowledgeBaseService.Application\KnowledgeBaseService.Application.csproj" />
-    <ProjectReference Include="..\KnowledgeBaseService.Infrastructure\KnowledgeBaseService.Infrastructure.csproj" />
-  </ItemGroup>
 
 </Project>

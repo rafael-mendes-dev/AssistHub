@@ -1,4 +1,4 @@
-using IdentityService.Infrastructure;
+using IdentityService.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
 

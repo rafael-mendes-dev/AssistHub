@@ -11,9 +11,5 @@
     <PackageReference Include="Microsoft.OpenApi" Version="2.7.5" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\IntegrationService.Application\IntegrationService.Application.csproj" />
-    <ProjectReference Include="..\IntegrationService.Infrastructure\IntegrationService.Infrastructure.csproj" />
-  </ItemGroup>
 
 </Project>

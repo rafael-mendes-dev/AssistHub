@@ -11,9 +11,5 @@
     <PackageReference Include="Microsoft.OpenApi" Version="2.7.5" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\AgentOrchestratorService.Application\AgentOrchestratorService.Application.csproj" />
-    <ProjectReference Include="..\AgentOrchestratorService.Infrastructure\AgentOrchestratorService.Infrastructure.csproj" />
-  </ItemGroup>
 
 </Project>
