@@ -4,13 +4,13 @@
 
 AssistHub é um projeto de microsserviços em .NET 10. A solução principal é `AssistHub.sln`. Os serviços estão em `services/`: `IdentityService`, `ConversationService`, `IntegrationService`, `KnowledgeBaseService`, `AgentOrchestratorService` e `NotificationService`. Código reutilizável fica em `building-blocks/AssistHub.BuildingBlocks`.
 
-## Padrão de arquitetura: Vertical Slice
+## Arquitetura: Clean Architecture + Vertical Slice
 
-- Cada serviço tem um único projeto executável em `services/<Servico>/src/<Servico>.Api`. A solução raiz contém esses seis projetos, `AssistHub.BuildingBlocks` e os testes.
-- Organize funcionalidades por caso de uso em `Features/<Area>/<CasoDeUso>/`. Mantenha juntos endpoint, contratos, validação, lógica e persistência exclusivos desse caso de uso, em vez de criar projetos horizontais `Application`, `Domain` e `Infrastructure`.
-- Deixe em `Features/<Area>/` somente código realmente compartilhado pelos casos de uso daquela área. Reutilize `building-blocks/` apenas para mecanismos comuns a mais de um serviço; configuração de infraestrutura compartilhada dentro de um serviço pode ficar em `Persistence/`.
-- `Program.cs` é o ponto de composição: registre dependências e endpoints dos slices ali, sem concentrar regras de negócio nesse arquivo. Não introduza MediatR ou outras abstrações sem necessidade concreta.
-- No estado atual, apenas IdentityService contém modelos e persistência: estão agrupados em `Features/Users/`, `Features/Tenants/` e `Persistence/`. Ainda não existem endpoints ou casos de uso implementados; os demais serviços têm `Features/` preparado, sem funcionalidades inventadas.
+- Use a separação de responsabilidades e a direção de dependências da Clean Architecture **dentro de cada serviço**: `Domain` não depende de API, Application ou Infrastructure; `Application` depende de `Domain`; `Infrastructure` implementa contratos internos; `Api` é a borda HTTP e o ponto de composição.
+- Organize a implementação **por caso de uso**: `Application/Features/<Area>/<CasoDeUso>/` para regras, contratos e validação do caso; `Api/Features/<Area>/<CasoDeUso>/` para o endpoint e seus contratos HTTP. Modelos compartilhados da área podem ficar em `Domain/Features/<Area>/`; implementações específicas de banco ficam em `Infrastructure/Persistence/<Area>/`. Não espalhe a regra de um caso de uso por pastas horizontais genéricas de `Handlers`, `Services` ou `Repositories`.
+- Configuração e clientes Mongo, índices, serializers e repositórios concretos pertencem a `Infrastructure`, nunca a `Api` ou `Domain`. Registre `Infrastructure` em `Program.cs` sem colocar regras de negócio ali. `building-blocks/` deve permanecer independente do Mongo e de outros detalhes de infraestrutura.
+- Hoje só `IdentityService` precisa de `Domain`, `Application` e `Infrastructure`: há modelos em `Domain/Features/Users` e `Domain/Features/Tenants` e persistência em `Infrastructure/Persistence`. Ainda não há casos de uso ou endpoints implementados; `Application/Features` e `Api/Features` estão preparados para eles. Os outros cinco serviços continuam apenas com `Api/Features` vazio; crie projetos adicionais quando houver código que justifique a separação.
+- Não introduza MediatR, interfaces ou outros projetos apenas para completar um diagrama; preserve a direção das dependências quando surgirem funcionalidades reais.
 
 ## Como trabalhar
 

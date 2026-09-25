@@ -1,4 +1,4 @@
-namespace IdentityService.Features.Users;
+namespace IdentityService.Infrastructure.Persistence.Users;
 
 public static class MongoCollections
 {

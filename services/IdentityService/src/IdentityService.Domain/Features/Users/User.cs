@@ -1,6 +1,6 @@
 using AssistHub.BuildingBlocks.Entities;
 
-namespace IdentityService.Features.Users;
+namespace IdentityService.Domain.Features.Users;
 
 public class User : BaseEntity, IAuditable
 {

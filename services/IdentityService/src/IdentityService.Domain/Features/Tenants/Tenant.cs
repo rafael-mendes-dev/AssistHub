@@ -1,6 +1,6 @@
 using AssistHub.BuildingBlocks.Entities;
 
-namespace IdentityService.Features.Tenants;
+namespace IdentityService.Domain.Features.Tenants;
 
 public class Tenant : BaseEntity, IAuditable
 {

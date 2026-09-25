@@ -1,7 +1,8 @@
+using IdentityService.Domain.Features.Users;
 using Microsoft.Extensions.Hosting;
 using MongoDB.Driver;
 
-namespace IdentityService.Features.Users;
+namespace IdentityService.Infrastructure.Persistence.Users;
 
 public sealed class MongoIndexInitializer(IMongoDatabase database) : IHostedService
 {

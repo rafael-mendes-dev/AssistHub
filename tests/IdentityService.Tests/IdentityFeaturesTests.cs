@@ -1,5 +1,5 @@
-using IdentityService.Features.Tenants;
-using IdentityService.Features.Users;
+using IdentityService.Domain.Features.Tenants;
+using IdentityService.Domain.Features.Users;
 
 namespace IdentityService.Tests;
 

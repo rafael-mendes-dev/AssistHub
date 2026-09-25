@@ -1,10 +1,10 @@
-using IdentityService.Features.Users;
+using IdentityService.Infrastructure.Persistence.Users;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Conventions;
 using MongoDB.Bson.Serialization.Serializers;
 
-namespace IdentityService.Persistence;
+namespace IdentityService.Infrastructure.Persistence;
 
 public static class MongoConfiguration
 {

@@ -1,4 +1,4 @@
-namespace IdentityService.Features.Users;
+namespace IdentityService.Domain.Features.Users;
 
 public readonly struct ProviderKey : IEquatable<ProviderKey>
 {

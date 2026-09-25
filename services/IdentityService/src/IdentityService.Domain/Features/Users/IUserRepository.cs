@@ -1,5 +1,5 @@
 
-namespace IdentityService.Features.Users;
+namespace IdentityService.Domain.Features.Users;
 
 public interface IUserRepository
 {

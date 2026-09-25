@@ -1,9 +1,11 @@
-using IdentityService.Features.Users;
+using IdentityService.Domain.Features.Users;
+using IdentityService.Infrastructure.Persistence;
+using IdentityService.Infrastructure.Persistence.Users;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Driver;
 
-namespace IdentityService.Persistence;
+namespace IdentityService.Infrastructure;
 
 public static class DependencyInjection
 {

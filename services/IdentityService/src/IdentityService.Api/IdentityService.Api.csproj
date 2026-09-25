@@ -12,8 +12,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="MongoDB.Driver" Version="3.11.1" />
-    <ProjectReference Include="..\..\..\..\building-blocks\AssistHub.BuildingBlocks\AssistHub.BuildingBlocks.csproj" />
+    <ProjectReference Include="..\IdentityService.Application\IdentityService.Application.csproj" />
+    <ProjectReference Include="..\IdentityService.Infrastructure\IdentityService.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

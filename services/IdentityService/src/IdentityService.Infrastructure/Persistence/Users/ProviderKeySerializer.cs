@@ -1,7 +1,8 @@
+using IdentityService.Domain.Features.Users;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Serializers;
 
-namespace IdentityService.Features.Users;
+namespace IdentityService.Infrastructure.Persistence.Users;
 
 public sealed class ProviderKeySerializer : SerializerBase<ProviderKey>
 {

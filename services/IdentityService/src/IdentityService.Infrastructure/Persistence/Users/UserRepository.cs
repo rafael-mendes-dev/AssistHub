@@ -1,7 +1,8 @@
-using AssistHub.BuildingBlocks.Persistence;
+using IdentityService.Infrastructure.Persistence;
+using IdentityService.Domain.Features.Users;
 using MongoDB.Driver;
 
-namespace IdentityService.Features.Users;
+namespace IdentityService.Infrastructure.Persistence.Users;
 
 public sealed class UserRepository(IMongoDatabase database) : MongoRepository<User>(database, MongoCollections.Users), IUserRepository
 {

@@ -1,4 +1,4 @@
-namespace IdentityService.Features.Tenants;
+namespace IdentityService.Domain.Features.Tenants;
 
 public readonly record struct PlanKey
 {
